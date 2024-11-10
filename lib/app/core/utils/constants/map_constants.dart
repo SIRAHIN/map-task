@@ -4,7 +4,7 @@ MapConstants._();
 
  
   static const styleId = 'osm-liberty' ; 
-  static const apiKey = 'bkoi_7ec966cf74a4ed1071149bd9d49a7ef993bc468e3a2427a19f40b1de6f1bbd44';
+  static const apiKey = 'bkoi_5718b5884ed061072db8496c6620a9ea5c24ec1d6fc143b2f8cbdeaa998073f6';
   static const mapUrl= 'https://map.barikoi.com/styles/$styleId/style.json?key=$apiKey';
 
 }

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:map_task/app/core/utils/constants/app_url.dart';
+import 'package:map_task/app/core/utils/constants/assets_path.dart';
 import 'package:map_task/app/core/utils/utility/app_utils.dart';
 import 'package:map_task/app/data/models/location_model/location_details_model.dart';
 import 'package:map_task/app/dependency/global%20dependency/global_controller.dart';
@@ -10,26 +11,26 @@ import 'package:map_task/app/services/network_services.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class MapCurrentLocationController extends GetxController {
+class MapLocationController extends GetxController {
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
     _requestLocationPermission();
   }
-
-  Rx<Position?> currentPosition = Rx<Position?>(null);
+  
+  // === Observable variables === //
   late MaplibreMapController mController;
+  Rx<Position?> currentPosition = Rx<Position?>(null);
   Rx<String?> address = Rx<String?>(null);
   Rx<Offset?> markerPosition = Rx<Offset?>(null);
   Rx<LatLng?> endPositionLatLng = Rx<LatLng?>(null);
-  
 
-  // Define the getter to access _locationDetailsModel
+  // === Getter to access _locationDetailsModel class === //
   LocationDetailsModel _locationDetailsModel = LocationDetailsModel();
   LocationDetailsModel get locationDetailsModel => _locationDetailsModel;
 
-  // === Permission Handle For Location === Use This For All Type Permission //
+  // === Permission Handle For Location Permission === //
   Future<void> _requestLocationPermission() async {
     var status = await Permission.location.status;
     if (status.isDenied) {
@@ -56,8 +57,7 @@ class MapCurrentLocationController extends GetxController {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.deniedForever) {
-        print(
-            "Permission Denied, Location permissions are permanently denied.");
+        print("Permission Denied, Location permissions are permanently denied.");
         openAppSettings();
         return;
       }
@@ -83,13 +83,13 @@ class MapCurrentLocationController extends GetxController {
             currentPosition.value!.latitude,
             currentPosition.value!.longitude,
           ),
-          iconImage: 'assets/current_location_icon.png'),
+          iconImage: AssetsPath.userCurrentLocaitonIcon),
     );
   }
 
-  // == Set New Symbol On Map When User Tap On Map == //
+  // === Set New Symbol On Map When User Tap On Map === //
   Symbol? _currentSymbol;
-  void onMapTapped(LatLng latLng) async {
+  void onMapTap(LatLng latLng) async {
     try {
       if (await Get.find<GlobalController>().checkInternetConnectivity()) {
         // Send request to the reverse geocoding API
@@ -102,7 +102,7 @@ class MapCurrentLocationController extends GetxController {
           _locationDetailsModel =
               LocationDetailsModel.fromJson(response.responseData);
 
-          // Remove the previous marker, if any
+          // Remove the previous marker and polyline, if any
           if (_currentSymbol != null) {
             mController.removeSymbol(_currentSymbol!);
             Get.find<MapPolylineController>().clearPolyline();
@@ -112,14 +112,13 @@ class MapCurrentLocationController extends GetxController {
           _currentSymbol = await mController.addSymbol(
             SymbolOptions(
               geometry: latLng,
-              iconImage:
-                  'assets/new_location_icon.png', // Ensure this asset exists
+              iconImage: AssetsPath
+                  .userDestinationLocaitonIcon, // Ensure this asset exists
             ),
           );
 
           // Update the address observable with the fetched address
           address.value = _locationDetailsModel.place!.address;
-          print(" ++++++ ${_locationDetailsModel.place!.country} +++++++");
         } else {
           // Handle error when status code is not 200
           AppUtils.errorToast(message: response.errorMessage);

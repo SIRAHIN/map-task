@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'package:map_task/app/core/utils/constants/error_string.dart';
 import 'package:map_task/app/core/utils/utility/app_utils.dart';
 import 'package:map_task/app/data/models/response_model/response_model.dart';
 
@@ -44,7 +42,6 @@ class NetworkCaller {
     if (response.statusCode == 200) {
       if (decodedResponse != null) {
 
-       
         // print(decodedResponse);
         // print(response.statusCode.toString());
         // print('==========${decodedResponse['status']}===========');
@@ -91,58 +88,6 @@ class NetworkCaller {
           isSuccess: false,
           statusCode: response.statusCode,
           responseData: 'Something went wrong');
-    }
-  }
-
-  // post Request With currentUserHeader //
-  Future<ResponseModel> postRequest(String url, Map<String, dynamic> body,
-      {String? token}) async {
-    final http.Response response = await http
-        .post(Uri.parse(url),
-            headers:
-                token == null ? _mainHeaders : currentUserHeader(token: token),
-            body: jsonEncode(body))
-        .timeout(
-      const Duration(seconds: timeoutRequest),
-      onTimeout: () {
-        return http.Response(ErrorStrings.kServerTimeoutMessage, 504);
-      },
-    );
-
-    // Handling the response
-    final decodedResponse = jsonDecode(response.body);
-
-    if (response.statusCode == 200) {
-      if (decodedResponse != null) {
-        return ResponseModel(
-            isSuccess: true,
-            statusCode: response.statusCode,
-            responseData: decodedResponse,
-            errorMessage: 'Success');
-      } else if (response.statusCode == 401) {
-        return ResponseModel(
-            isSuccess: false,
-            statusCode: response.statusCode,
-            responseData: decodedResponse ?? ErrorStrings.serverErrorMessage,
-            errorMessage: ErrorStrings.serverErrorMessage);
-      } else if (response.statusCode == 500) {
-        return ResponseModel(
-            isSuccess: false,
-            statusCode: response.statusCode,
-            responseData:
-                decodedResponse ?? ErrorStrings.unauthorizedUserErrorMessage,
-            errorMessage: ErrorStrings.unauthorizedUserErrorMessage);
-      } else {
-        return ResponseModel(
-            isSuccess: false,
-            statusCode: response.statusCode,
-            responseData: decodedResponse ?? 'Something went Wrong');
-      }
-    } else {
-      return ResponseModel(
-          isSuccess: false,
-          statusCode: response.statusCode,
-          responseData: decodedResponse);
     }
   }
 }

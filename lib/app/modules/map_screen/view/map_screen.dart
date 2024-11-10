@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:map_task/app/core/style/style.dart';
 import 'package:map_task/app/core/utils/constants/map_constants.dart';
-import 'package:map_task/app/modules/map_screen/contorller/map_current_location_controller.dart';
+import 'package:map_task/app/modules/map_screen/contorller/map_location_controller.dart';
 import 'package:map_task/app/modules/map_screen/contorller/map_polyline_controller.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
-class MapScreen extends GetView<MapCurrentLocationController> {
+class MapScreen extends GetView<MapLocationController> {
   const MapScreen({super.key});
 
   @override
@@ -27,7 +27,7 @@ class MapScreen extends GetView<MapCurrentLocationController> {
               },
               onMapClick: (point, coordinates) {
                 controller.endPositionLatLng.value = coordinates;
-                controller.onMapTapped(coordinates);
+                controller.onMapTap(coordinates);
               },
               styleString: MapConstants.mapUrl,
             );
@@ -39,8 +39,8 @@ class MapScreen extends GetView<MapCurrentLocationController> {
               return Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  height: Get.height * .18,
-                  width: Get.width * .80,
+                  height: Get.height * .22,
+                  width: Get.width * .85,
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
@@ -48,11 +48,11 @@ class MapScreen extends GetView<MapCurrentLocationController> {
                       borderRadius:
                           const BorderRadius.all(Radius.circular(10))),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Place Information',
+                        'Place Information:',
                         style: headinTextStyle(
                             fontSize: 14,
                             fontColor: Colors.deepOrange,
@@ -60,7 +60,6 @@ class MapScreen extends GetView<MapCurrentLocationController> {
                       ),
                       const Divider(),
                       Expanded(
-                        // == AddreddBn Text Section == //
                         child: Text(
                           controller.locationDetailsModel.place?.addressBn ??
                               '-!-',
@@ -72,65 +71,97 @@ class MapScreen extends GetView<MapCurrentLocationController> {
                               color: Colors.black),
                         ),
                       ),
-                      Row(
-                        children: [
-                          // == CityBn Text Section == //
-                          Text(
-                            '${controller.locationDetailsModel.place?.cityBn},' ??
-                                '-!-',
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                          ),
-
-                          // == Country Text Section == //
-                          Text(
-                            controller.locationDetailsModel.place?.country ??
-                                '-!-',
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // == Postal Code Text Section == //
-                          Text(
-                            controller.locationDetailsModel.place?.postCode ??
-                                '-!-',
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black54),
-                          ),
-
-                          // == Locaiton Button == //
-                          GestureDetector(
-                            onTap: () async {
-                              await Get.find<MapPolylineController>()
-                                  .fetchDirections(
-                                      startCoordinateLongitude: controller
-                                          .currentPosition.value!.longitude,
-                                      startCoordinateLatitude: controller
-                                          .currentPosition.value!.latitude,
-                                      endCoordinate:
-                                          controller.endPositionLatLng.value);
-                            },
-                            child: const CircleAvatar(
-                              backgroundColor: Colors.deepPurple,
-                              radius: 15,
-                              child: Icon(
-                                Icons.location_on,
-                                color: Colors.white,
-                                size: 17,
-                              ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                // == CityBn Text Section == //
+                                Text(
+                                  '${controller.locationDetailsModel.place?.cityBn}, ${controller.locationDetailsModel.place?.country}',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black54),
+                                ),
+                              ],
                             ),
-                          )
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          controller.locationDetailsModel.place?.postCode ??
+                              '-!-',
+                          style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black54),
+                        ),
+                      ),
+
+                      // == Coordinate And Button == //
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          // == Coordinate Code Text Seciton == //
+                          Text(
+                            '${controller.endPositionLatLng.value?.latitude.toStringAsFixed(4)}° N ${controller.endPositionLatLng.value?.longitude.toStringAsFixed(4)}° E',
+                            style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black54),
+                          ),
+                          // == Navigation Button Seciton == //
+                          SizedBox(
+                            height: Get.height * .045,
+                            width: Get.width * .30,
+                            child: ElevatedButton(
+                                style: const ButtonStyle(
+                                    padding:
+                                        WidgetStatePropertyAll(EdgeInsets.zero),
+                                    shape: WidgetStatePropertyAll(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(20),
+                                        ),
+                                      ),
+                                    ),
+                                    backgroundColor: WidgetStatePropertyAll(
+                                        Colors.deepPurple)),
+                                onPressed: () async {
+                                  // Function Calling For Fetching Coordinates //
+                                  await Get.find<MapPolylineController>()
+                                      .fetchCoordinates(
+                                          startCoordinateLongitude: controller
+                                              .currentPosition.value!.longitude,
+                                          startCoordinateLatitude: controller
+                                              .currentPosition.value!.latitude,
+                                          endCoordinates: controller
+                                              .endPositionLatLng.value);
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.directions,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      width: Get.width * .01,
+                                    ),
+                                    Text(
+                                      'Directions',
+                                      style: bodyTextStyle(
+                                          fontSize: 12,
+                                          fontColor: Colors.white,
+                                          isTextBold: true),
+                                    ),
+                                  ],
+                                )),
+                          ),
                         ],
                       ),
                     ],
