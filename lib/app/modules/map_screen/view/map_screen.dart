@@ -59,6 +59,8 @@ class MapScreen extends GetView<MapLocationController> {
                             isTextBold: true),
                       ),
                       const Divider(),
+
+                      // === AddressBn Text  Seciton ==== //
                       Expanded(
                         child: Text(
                           controller.locationDetailsModel.place?.addressBn ??
@@ -71,6 +73,8 @@ class MapScreen extends GetView<MapLocationController> {
                               color: Colors.black),
                         ),
                       ),
+
+                      // === CityBn and Country Text Seciton === //
                       Expanded(
                         child: Row(
                           children: [
@@ -90,6 +94,8 @@ class MapScreen extends GetView<MapLocationController> {
                           ],
                         ),
                       ),
+
+                      // === Postal Code Text Seciton === //
                       Expanded(
                         child: Text(
                           controller.locationDetailsModel.place?.postCode ??
@@ -119,48 +125,49 @@ class MapScreen extends GetView<MapLocationController> {
                             height: Get.height * .045,
                             width: Get.width * .30,
                             child: ElevatedButton(
-                                style: const ButtonStyle(
-                                    padding:
-                                        WidgetStatePropertyAll(EdgeInsets.zero),
-                                    shape: WidgetStatePropertyAll(
-                                      RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(20),
-                                        ),
+                              style: const ButtonStyle(
+                                  padding:
+                                      WidgetStatePropertyAll(EdgeInsets.zero),
+                                  shape: WidgetStatePropertyAll(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
                                       ),
                                     ),
-                                    backgroundColor: WidgetStatePropertyAll(
-                                        Colors.deepPurple)),
-                                onPressed: () async {
-                                  // Function Calling For Fetching Coordinates //
-                                  await Get.find<MapPolylineController>()
-                                      .fetchCoordinates(
-                                          startCoordinateLongitude: controller
-                                              .currentPosition.value!.longitude,
-                                          startCoordinateLatitude: controller
-                                              .currentPosition.value!.latitude,
-                                          endCoordinates: controller
-                                              .endPositionLatLng.value);
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.directions,
-                                      color: Colors.white,
-                                    ),
-                                    SizedBox(
-                                      width: Get.width * .01,
-                                    ),
-                                    Text(
-                                      'Directions',
-                                      style: bodyTextStyle(
-                                          fontSize: 12,
-                                          fontColor: Colors.white,
-                                          isTextBold: true),
-                                    ),
-                                  ],
-                                )),
+                                  ),
+                                  backgroundColor: WidgetStatePropertyAll(
+                                      Colors.deepPurple)),
+                              onPressed: () async {
+                                // Function Calling For Fetching Coordinates //
+                                await Get.find<MapPolylineController>()
+                                    .fetchCoordinates(
+                                        startCoordinateLongitude: controller
+                                            .currentPosition.value!.longitude,
+                                        startCoordinateLatitude: controller
+                                            .currentPosition.value!.latitude,
+                                        endCoordinates:
+                                            controller.endPositionLatLng.value);
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.directions,
+                                    color: Colors.white,
+                                  ),
+                                  SizedBox(
+                                    width: Get.width * .01,
+                                  ),
+                                  Text(
+                                    'Directions',
+                                    style: bodyTextStyle(
+                                        fontSize: 12,
+                                        fontColor: Colors.white,
+                                        isTextBold: true),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
